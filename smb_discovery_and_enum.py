@@ -18,16 +18,17 @@ from impacket.smbconnection import SMBConnection
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 
-SKIP_SHARES = {"IPC$", "PRINT$", "ADMIN$", "NETLOGON", "SYSVOL"}  # Ensure all listed shares are UPPERCASE!!!
-SKIP_SERVERS = {"SERVER1"}  # Ensure all listed servers are UPPERCASE!!!
+SKIP_SHARES = {"IPC$", "PRINT$", "ADMIN$", "NETLOGON", "SYSVOL"}
+SKIP_SERVERS = {"SERVER1"}
 MASSCAN_RATE = 10000  # packets-per-second to keep scans quick
+
 
 # --------------------------------------------------------------------------- #
 # Strip off the "FILE:" from KRB5CCNAME path
+# --------------------------------------------------------------------------- #
 cc = os.environ.get('KRB5CCNAME')
 if cc and cc.lower().startswith('file:'):
 	os.environ['KRB5CCNAME'] = cc.split(':', 1)[1]
-# --------------------------------------------------------------------------- #
 
 
 # --------------------------------------------------------------------------- #
@@ -195,7 +196,7 @@ def audit_host(
 		logger.warning(f"{ip} → no PTR hostname; skipping")
 		return []
 
-	if hostname.upper() in SKIP_SERVERS:
+	if any(hostname.lower() == server.lower() for server in SKIP_SERVERS):
 		return []
 
 	logger.info(f"Auditing {hostname} ({ip}) …")
@@ -225,10 +226,10 @@ def audit_host(
 	try:
 		for share in conn.listShares():
 			name = share["shi1_netname"][:-1]
-			if name.upper() in SKIP_SHARES:
+			if any(name.lower() == share.lower() for share in SKIP_SHARES):
 				continue
 			lvl = classify_share(conn, name)
-			if lvl != "NO ACCESS":                     # filter early
+			if lvl != "NO ACCESS":                     # Don't report shares with no access
 				rows.append((hostname, name, lvl))
 	finally:
 		conn.logoff()
