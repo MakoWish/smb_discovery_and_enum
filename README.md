@@ -11,4 +11,5 @@ Supports Kerberos since most Windows networks now require Kerberos for SMB acces
 ## Prerequisites
 
 `masscan`
+
 `impacket`
