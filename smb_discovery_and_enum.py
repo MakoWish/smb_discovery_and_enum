@@ -19,7 +19,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 
 
 SKIP_SHARES = {"IPC$", "PRINT$", "ADMIN$", "NETLOGON", "SYSVOL"}  # Ensure all listed shares are UPPERCASE!!!
-SKIP_SERVERS = {"ERPPRINT1"}  # Ensure all listed servers are UPPERCASE!!!
+SKIP_SERVERS = {"SERVER1"}  # Ensure all listed servers are UPPERCASE!!!
 MASSCAN_RATE = 10000  # packets-per-second to keep scans quick
 
 # --------------------------------------------------------------------------- #
